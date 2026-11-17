@@ -7,13 +7,12 @@ import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fidelity.backend.model.dto.CompanyDTO;
 import com.fidelity.backend.model.dto.converter.CompanyConverter;
 import com.fidelity.backend.model.entity.CompanyEntity;
 import com.fidelity.backend.service.CompanyService;
-
-import jakarta.websocket.server.PathParam;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +46,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyId}")
-    public ResponseEntity<CompanyDTO> getCompanyById(@PathParam("companyId") Long companyId) {
+    public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable("companyId") Long companyId) {
 
         CompanyEntity companyEntity = companyService.getCompanyById(companyId);
         CompanyDTO companyDTO = companyConverter.convertToDTO(companyEntity);
@@ -56,14 +55,19 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<CompanyDTO> createCompany(@RequestBody CompanyDTO companyDTO) throws Exception {
+    public ResponseEntity<CompanyDTO> createCompany(@RequestBody CompanyDTO companyDTO) {
         CompanyEntity companyEntity = companyConverter.convertToEntity(companyDTO);
 
         CompanyEntity companyEntityCreated = companyService.createCompany(companyEntity);
 
         CompanyDTO companyDTOCreated = companyConverter.convertToDTO(companyEntityCreated);
 
-        return ResponseEntity.created(new URI("")).body(companyDTOCreated);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{companyId}")
+                .buildAndExpand(companyEntityCreated.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(companyDTOCreated);
     }
 
     @PutMapping("/{companyId}")

@@ -4,9 +4,9 @@ Ordered by priority. Each phase should be a separate commit/PR.
 
 ## Phase 1 - Bug fixes (small, low risk)
 1. `discovery-service.yml`: fix `defaultZone` to `http://${eureka.instance.hostname}:${server.port}/eureka/`.
-2. `CompanyController.getCompanyById`: replace `@PathParam` with `@PathVariable("companyId")`.
-3. Align Spring Cloud to `2023.0.3` in `discovery-server`.
-4. Upgrade springdoc to a Boot 3.3-compatible version (2.6.0).
+2. ~~`CompanyController.getCompanyById`: replace `@PathParam` with `@PathVariable`~~ - done by the platform upgrade.
+3. ~~Align Spring Cloud in `discovery-server`~~ - done by the platform upgrade (all services on 2025.1.4).
+4. ~~Upgrade springdoc~~ - done by the platform upgrade (3.1.1).
 5. Gateway: remove the commented route; choose either explicit routes or the discovery locator, not both.
 6. Controller: return a real `Location` header on create (`/api/v1/company/{id}`), drop `throws Exception`.
 
@@ -19,7 +19,7 @@ Ordered by priority. Each phase should be a separate commit/PR.
 
 ## Phase 3 - Structure and tooling
 1. Root parent POM (`packaging=pom`, modules, `dependencyManagement`) so versions live in one place.
-2. Upgrade Spring Boot 3.3.x to a supported 3.5.x line, with matching Spring Cloud release train.
+2. ~~Upgrade Spring Boot~~ - done: Java 25, Spring Boot 4.1.2, Spring Cloud 2025.1.4. Revisit when Boot 4.2 / Spring Cloud 2026.0 reach GA (Boot 4.1 OSS support ends 2027-07-31).
 3. Actuator on all services; health checks exposed.
 4. `fail-fast` + retry for config import (replace `optional:` for non-local profiles).
 5. Dockerfile per service + `docker-compose.yml` with startup ordering via healthchecks.
