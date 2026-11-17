@@ -5,7 +5,7 @@ Guidance for Claude Code when working in this repository.
 ## Overview
 
 Spring Cloud microservices skeleton ("Arquitetura"), used as a base for other projects.
-Java 17, Spring Boot 3.3.3, Spring Cloud 2023.0.x, Maven (each service has its own `mvnw`).
+Java 25 (LTS), Spring Boot 4.1.2, Spring Cloud 2025.1.4 (Oakwood), Maven (each service has its own `mvnw`).
 Base package: `com.fidelity`.
 
 ## Services (`services/`)
@@ -14,7 +14,7 @@ Base package: `com.fidelity`.
 |---|---|---|
 | `config-server` | 8888 | Spring Cloud Config, `native` profile, files in `src/main/resources/configurations/` |
 | `discovery-server` | 8761 | Eureka server (`discovery-service.yml`) |
-| `gateway` | 8080 | Spring Cloud Gateway, routes `/api/v1/**` to `lb:http://BACKEND-SERVICE` |
+| `gateway` | 8080 | Spring Cloud Gateway (WebFlux), routes `/api/v1/**` to `lb:http://BACKEND-SERVICE` |
 | `backend` | 8090 | REST API, currently only `/api/v1/company` (CRUD), H2 on classpath |
 
 Each service's `application.yml` only sets its name and `spring.config.import: optional:configserver:http://localhost:8888`.
@@ -60,16 +60,15 @@ New resources should follow the `Company*` pattern: `XEntity extends BaseEntity<
 - Code identifiers in English; some comments are in Portuguese, either is fine.
 - Use constructor injection (no field `@Autowired`).
 - Use `@PathVariable` for path params (never `jakarta.websocket.server.PathParam`).
-- Keep Spring Boot and Spring Cloud versions identical across all services.
+- Keep Java, Spring Boot and Spring Cloud versions identical across all services.
+- Spring Boot 4 / Cloud 2025.x naming: `spring-boot-starter-webmvc` (not `-web`), `spring-cloud-starter-gateway-server-webflux` (not `spring-cloud-starter-gateway`), gateway properties live under `spring.cloud.gateway.server.webflux.*`.
+- springdoc must be on the 3.x line for Boot 4 (2.x breaks at startup).
 - Configuration belongs in config-server, not in each service's `application.yml`.
 
 ## Known issues (see PLAN.md)
 
 - `discovery-service.yml` `defaultZone` has `/` instead of `:` before the port.
-- `CompanyController.getCompanyById` uses the wrong `@PathParam` annotation.
 - `CompanyService` is stubbed: no persistence, `getCompanyById` returns null, `deleteCompany` throws.
-- springdoc 2.0.2 is too old for Boot 3.3.x.
-- `discovery-server` uses Spring Cloud 2023.0.2, the rest 2023.0.3.
 
 ## Environment notes
 
